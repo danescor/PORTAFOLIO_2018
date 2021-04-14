@@ -20,13 +20,18 @@ display "`c(username)'"
 
 *** 0.1 Settings user's paths
 	if ("`c(username)'" == "jcordova") {
-		global project 				"E:\DANTE\2021\21. LINEA DE SALIDA 2018\LINEA_BASE_2018"
+		global project 				"E:\DANTE\2021\21. LINEA DE SALIDA 2018\PORTAFOLIO_2018"
 	}	
 	
 *** 0.2 Setting folder structure
 	global codes					"${project}/codes"
 	global data						"${project}/data"
 	global outputs 					"${project}/outputs"
+	
+	
+	/*para probar*/
+	
+	
 	
 	// Semana 1
 	global codes_1					"${codes}/01 programacion intro"
