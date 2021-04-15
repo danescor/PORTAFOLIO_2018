@@ -34,8 +34,19 @@ display "`c(username)'"
 	
 	
 	// Semana 1
-	global codes_1					"${codes}/01 programacion intro"
-	global codes_2					"${codes}/02 manejo y limpieza de datos"
+	global codes_1					"${codes}/01 seccion 1"
+	global codes_2					"${codes}/02 seccion 2"
+	global codes_3					"${codes}/03 seccion 3"
+	global codes_4					"${codes}/04 seccion 4"
+	global codes_5					"${codes}/05 seccion 5"
+	global codes_6					"${codes}/06 seccion 6"
+	global codes_7					"${codes}/07 seccion 7"
+	global codes_8					"${codes}/08 seccion 8"
+	global codes_9					"${codes}/09 seccion 9"
+	global codes_10					"${codes}/10 seccion 10"
+	global codes_11					"${codes}/11 seccion 11"
+	
+	
 	global data_1					"${data}/01 seccion 1"
 	global data_2					"${data}/02 seccion 2"
 	global data_3					"${data}/03 seccion 3"
@@ -47,8 +58,8 @@ display "`c(username)'"
 	global data_9					"${data}/09 seccion 9"
 	global data_10					"${data}/10 seccion 10"
 	global data_11					"${data}/11 seccion 11"
-	global data_12					"${data}/base consolidada"
-	global data_13					"${data}/base id"
+	/*global data_12					"${data}/base consolidada"
+	global data_13					"${data}/base id"*/
 	
 	//global data_1_2					"${data}/02-manejo-limpieza-datos"
 	
