@@ -31,15 +31,68 @@
 	duplicates report ID_HOGAR
 	
 *** 1.3 N° de caracteres de principales variables
-	count
-	local obs =r(N)
-	display "`obs'"
 	
-	forvalues p = 1/1030 {
-		strlen (EXPEDIENTE)
+*** Uniformizando los caracteres de la varibale IQ*/
+	gen nrocarac=length(IQ), after (IQ)	 /*EL NRO DE CARACTERES NO ES UNIFORME*/
+	
+	/*NOTA: VARIABLE IQ = EXPEDIENTE + COD_ENC*/
+	
+	gen str2 COD_ENC_N = string(COD_ENC,"%02.0f"), after(COD_ENC)
+
+	
+	egen IQ_N = concat(EXPEDIENTE COD_ENC_N)
+	replace IQ = IQ_N 
+	gen nrocarac1=length(IQ), after (IQ)
+	sum nrocarac1
+	drop nrocarac nrocarac1 IQ_N COD_ENC_N
+	
+*** Uniformizando variableS, quitando espacios vacios
 		
-		
+	replace UUTT = strtrim(stritrim(UUTT))
+	replace NOMDEP = strtrim(stritrim(NOMDEP))
+	replace NOMPROV = strtrim(stritrim(NOMPROV))
+	replace NOMDIS = strtrim(stritrim(NOMDIS))
+	replace NUCL_EJEC = strtrim(stritrim(NUCL_EJEC))
+	replace NOMCCPP = strtrim(stritrim(NOMCCPP))
+	replace NOMVIA = strtrim(stritrim(NOMVIA))
+	replace JEFE_AP_P = strtrim(stritrim(JEFE_AP_P))
+	replace JEFE_AP_M = strtrim(stritrim(JEFE_AP_M))
+	replace JEFE_AP_NOM = strtrim(stritrim(JEFE_AP_NOM))
+	replace JEFE_DNI = strtrim(stritrim(JEFE_DNI))
+	replace JEFE_CEL = strtrim(stritrim(JEFE_CEL))
+	replace CONY_AP_NOM = strtrim(stritrim(CONY_AP_NOM))
+	replace CONY_AP_P = strtrim(stritrim(CONY_AP_P))
+	replace CONY_AP_M = strtrim(stritrim(CONY_AP_M))
+	replace CONY_CEL = strtrim(stritrim(CONY_CEL))
+	replace CONY_DNI = strtrim(stritrim(CONY_DNI))
+	
+*** verificando los ubigeos
+	egen coddis2 = concat(CODDEP CODPROV)
+	egen flag = diff(CODDIS coddis2)
+	
+	if (flag==1) {
+		display as text in smcl "Coinciden los codigos"
 	}
+	else {
+		display as text in smcl "No coinciden los codigos"
+	} 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/* Expandimos para tener duplicados 
 	expand 2
