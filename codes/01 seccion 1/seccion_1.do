@@ -21,7 +21,7 @@
 	use "${data_1}/seccion_01.dta", clear 
 		
 *** 1.2 Duplicados y variable ID
-	isid ID_HOGAR
+	capture isid ID_HOGAR
 	duplicates report ID_HOGAR
 	
 	/*Hay valores perdidos eliminamos*/
@@ -30,9 +30,9 @@
 	isid ID_HOGAR
 	duplicates report ID_HOGAR
 	
-*** 1.3 N° de caracteres de principales variables
+*** 1.3 Uniformizando los caracteres de la varibale */
 	
-*** Uniformizando los caracteres de la varibale IQ*/
+	/*  Variable IQ  */
 	gen nrocarac=length(IQ), after (IQ)	 /*EL NRO DE CARACTERES NO ES UNIFORME*/
 	
 	/*NOTA: VARIABLE IQ = EXPEDIENTE + COD_ENC*/
@@ -46,7 +46,7 @@
 	sum nrocarac1
 	drop nrocarac nrocarac1 IQ_N COD_ENC_N
 	
-*** Uniformizando variableS, quitando espacios vacios
+	/*  Variables de nombres, quitando espacios vacios */
 		
 	replace UUTT = strtrim(stritrim(UUTT))
 	replace NOMDEP = strtrim(stritrim(NOMDEP))
@@ -66,9 +66,59 @@
 	replace CONY_CEL = strtrim(stritrim(CONY_CEL))
 	replace CONY_DNI = strtrim(stritrim(CONY_DNI))
 	
-*** verificando los ubigeos
-	egen coddis2 = concat(CODDEP CODPROV)
-	egen flag = diff(CODDIS coddis2)
+*** 1.4 Verificando los ubigeos
+
+	/* VAriable CODDIS CODPROV */
+	egen coddis2 = concat(CODDEP CODPROV) /* Crear variable de comparacion */
+	egen flag = diff(CODDIS coddis2) /* diff compara valores de dos columnas */
+	
+	sort NOMDEP NOMPROV NOMDIS 
+	
+	/* Notas */
+	note CODDIS: Existen algunos distritos que tienen dos codigos o codigos que tienen dos nombres 
+	
+	/* Distritos: COPORAQUE Y TUTI tienen el mismo codigo*/
+		replace NOMDIS = "COPORAQUE" if NOMDIS=="TUTI" /* 5 cambios */
+	
+	/* Distritos: FITZCARRALD Y MANU tienen el mismo codigo*/
+		*** Cambiar el codigo del distrito MANU 
+		replace CODDIS = "170202" if CODDIS=="170201" /* 6 cambios */
+	
+		replace NOMDIS = "FITZCARRALD" if NOMDIS=="MANU" /* 7 cambios */
+
+	/* Distritos: QUILAHUANI CANDARAVE CURIBAYA, todos tienen que ser QUILAHUANI tienen el mismo codigo*/
+		*** Cambiar el codigo del distrito CANDARAVE 
+		replace CODDIS = "230206" if CODDIS=="230201"  /* 8 cambios */
+		replace CODDIS = "230206" if CODDIS=="230204"  /* 4 cambios */
+	
+		replace NOMDIS = "QUILAHUANI" if NOMDIS=="CANDARAVE" /* 7 cambios */
+		replace NOMDIS = "QUILAHUANI" if NOMDIS=="CURIBAYA" /* 4 cambios */
+	
+	/* Distritos: COLCA CHACAPAMPA, todos tienen que ser COLCA tienen el mismo codigo*/
+		*** Cambiar el codigo del distrito COLCA 
+		replace CODDIS = "120112" if CODDIS=="120212"  /* 1 cambios */
+		replace CODDIS = "120112" if CODDIS=="120105"  /* 4 cambios */
+	
+		replace NOMDIS = "COLCA" if NOMDIS=="CHACAPAMPA" /* 4 cambios */
+		
+	
+	/* Distritos: USQUIL, tiene dos codigos*/
+		*** Cambiar el codigo del distrito USQUIL 
+		replace CODDIS = "130614" if CODDIS=="131406"  /* 1 cambios */
+		
+	/* Cambiar departamento UCAYALI por JUNIN */
+		replace CODDEP = "12" if NOMPROV=="ATALAYA" & CODDEP=="25"   /* 8 cambios */
+		replace NOMDEP = "JUNIN" if NOMDEP=="UCAYALI" &  CODDEP=="12" /* 8 cambios */
+		replace NOMPROV = "SATIPO" if NOMPROV=="ATALAYA" &  CODDEP=="12" /* 8 cambios */
+		replace CODPROV = "1206" if CODPROV=="2502" &  CODDEP=="12" /* 8 cambios */
+		replace CODDIS = "120608" if CODDIS=="250201" &  CODDEP=="12" /* 8 cambios */
+		replace NOMDIS = "RIOTAMBO" if NOMDIS=="RAYMONDI" &  CODDEP=="12" /* 8 cambios */
+		
+	/*24.04.2021 23.31 horas, revisar los codigos de dep y prov*/
+	
+
+	
+	
 	
 	if (flag==1) {
 		display as text in smcl "Coinciden los codigos"
@@ -104,7 +154,10 @@
 	
 	/*Guardamos en nueva base de datos*/
 	save "${data_1}/seccion_01r.dta", replace
-		
+	
+	
+	
+	
 *********************************************************************************
 ***	PART 2: Glimpse de algunas variables
 *********************************************************************************

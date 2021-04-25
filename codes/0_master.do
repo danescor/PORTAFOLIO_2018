@@ -74,7 +74,7 @@ display "`c(username)'"
 	  				
 		capture which `pgks'
 		
-		if (_rc != 111) {
+		if (_rc != 111) { /*error 111 indica que el paquete no esté instalado*/
 			display as text in smcl "Paquete {it:`pgks'} está instalado "
 		}
 		
@@ -95,7 +95,9 @@ display "`c(username)'"
 	}
 	
 	ieboilstart, version(15.0)
-		
+
+*** Ejecutar hasta línea 97	
+
 *** 0.4 Setting up execution 
 	global primera_semana 1
 	global segunda_semana 1
