@@ -68,10 +68,6 @@
 	
 *** 1.4 Verificando los ubigeos
 
-	/* VAriable CODDIS CODPROV */
-	egen coddis2 = concat(CODDEP CODPROV) /* Crear variable de comparacion */
-	egen flag = diff(CODDIS coddis2) /* diff compara valores de dos columnas */
-	
 	sort NOMDEP NOMPROV NOMDIS 
 	
 	/* Notas */
@@ -106,7 +102,7 @@
 		*** Cambiar el codigo del distrito USQUIL 
 		replace CODDIS = "130614" if CODDIS=="131406"  /* 1 cambios */
 		
-	/* Cambiar departamento UCAYALI por JUNIN */
+	/* Cambiar departamento UCAYALI provincia Atalaya distrito Raymondi */
 		replace CODDEP = "12" if NOMPROV=="ATALAYA" & CODDEP=="25"   /* 8 cambios */
 		replace NOMDEP = "JUNIN" if NOMDEP=="UCAYALI" &  CODDEP=="12" /* 8 cambios */
 		replace NOMPROV = "SATIPO" if NOMPROV=="ATALAYA" &  CODDEP=="12" /* 8 cambios */
@@ -114,24 +110,190 @@
 		replace CODDIS = "120608" if CODDIS=="250201" &  CODDEP=="12" /* 8 cambios */
 		replace NOMDIS = "RIOTAMBO" if NOMDIS=="RAYMONDI" &  CODDEP=="12" /* 8 cambios */
 		
-	/*24.04.2021 23.31 horas, revisar los codigos de dep y prov*/
+	/* Cambiar provincia Bongara distrito San Jazan */
+		replace CODPROV = "0105" if CODPROV=="0103" & CODDEP=="01"   /* 2 cambios */
+		replace NOMPROV = "LUYA" if NOMPROV=="BONGARA" & CODDEP=="01" /* 2 cambios */
+		replace NOMDIS = "SAN JERONIMO" if NOMDIS=="JAZAN" & CODDEP=="01"  /* 2 cambios */
+		replace CODDIS = "010518" if CODDIS=="010307" & CODDEP=="01"   /* 2 cambios */
+
+	/* Cambiar provincia HUamanga distrito Vinchos */
+		replace CODPROV = "0502" if CODPROV=="0501" & CODDEP=="05"   /* 4 cambios */
+		replace NOMPROV = "CANGALLO" if NOMPROV=="HUAMANGA" & CODDEP=="05" /* 4 cambios */
+		replace NOMDIS = "CHUSCHI" if NOMDIS=="VINCHOS" & CODDEP=="05"  /* 4 cambios */
+		replace CODDIS = "050202" if CODDIS=="050114" & CODDEP=="05"   /* 4 cambios */
 	
+	/* Cambiar provincia HUamanga distrito Vinchos */
+		replace CODPROV = "1607" if CODPROV=="1603" & CODDIS=="160703"   /* 1 cambios */
+		replace NOMPROV = "DATEM DEL MARAÑON" if NOMPROV=="LORETO" & CODDIS=="160703" /* 1 cambios */
+		replace NOMPROV = "DATEM DEL MARAÑON" if CODPROV=="1607"  /* 39 cambios */	
+		replace JEFE_DNI = "05609746" if JEFE_DNI=="05609764" & ID_HOGAR==682  /* 1 cambios */	
+		
+	/* Cambiar distrito Chipao */
+		replace CODDIS = "050603" if CODDIS=="050606" & ID_HOGAR==664   /* 1 cambios */
+		replace NOMDIS = "CABANA" if NOMDIS=="CHIPAO" & ID_HOGAR==664 /* 1 cambios */
+		replace NUCL_EJEC = "CABANA" if NUCL_EJEC=="CHIPAO" & ID_HOGAR==664 /* 1 cambios */
+		
+	/* Cambiar distrito Cuchumbaya */
+		replace CODDIS = "180102" if CODDIS=="180103" & ID_HOGAR==788   /* 1 cambios */
+		replace NOMDIS = "CARUMAS" if NOMDIS=="CUCHUMBAYA" & ID_HOGAR==788 /* 1 cambios */
+		replace NUCL_EJEC = "CARUMAS" if NUCL_EJEC=="CUCHUMBAYA" & ID_HOGAR==788 /* 1 cambios */
+	
+		replace CODDIS = "180102" if CODDIS=="180103" & ID_HOGAR==786   /* 1 cambios */
+		replace NOMDIS = "CARUMAS" if NOMDIS=="CUCHUMBAYA" & ID_HOGAR==786 /* 1 cambios */
+		replace NUCL_EJEC = "CARUMAS" if NUCL_EJEC=="CUCHUMBAYA" & ID_HOGAR==786 /* 1 cambios */
 
 	
+	/* Verificar codigos de distritos*/
+		gen codprov1 = substr(CODDIS,1,4), after (CODPROV)
+		egen flagprov = diff(CODPROV codprov1) /* diff compara valores de dos columnas */
+		
+		summarize flagprov
+		
+		if (r(sum)==0) {
+			display as text in smcl "Coinciden los codigos"
+		}
+		else {
+			display as text in smcl "No coinciden los codigos"
+		} 
 	
 	
-	if (flag==1) {
-		display as text in smcl "Coinciden los codigos"
-	}
-	else {
-		display as text in smcl "No coinciden los codigos"
-	} 
+	/* Variable CODDIS NROCCPP */
+		gen caracdis = length(NROCCPP), after (NROCCPP)
+		
+		replace NROCCPP= substr(NROCCPP,7,16) if caracdis==16 /* 22 cambios */
+	
+		
+	/* Verificar codigos de CCPP */
+		gen codccpp1 = substr(NROCCPP,1,6), after (NROCCPP)
+		egen flagccpp = diff(CODDIS codccpp1) /* diff compara valores de dos columnas */
+		
+		summarize flagccpp
+		
+		if (r(sum)==0) {
+			display as text in smcl "Coinciden los codigos"
+		}
+		else {
+			display as text in smcl "No coinciden los codigos"
+		} 
+	
+		
+note NROCCPP: Existen algunos ubigeos de CCPP que tienen ubigeos de distritos erroneos, vamos a cambiar los 6 primeros digitos del ubigeo de CCPP.
+		
+		
+		/* Generando los 4 ultimos digitos del ubigeo de CCPP */
+		gen codccpp2 = substr(NROCCPP,7,10), after(NROCCPP) /* Crear variable de comparacion */
+		
+		/*Concatenando variables CODDIS + codccpp2 */
+		 egen codccpp_n = concat(CODDIS codccpp2) /* Crear variable de comparacion */
+		
+		replace NROCCPP=codccpp_n /* 47 cambios */
 	
 	
+		drop caracdis codccpp1 codccpp2 codccpp_n flagccpp flagprov
+		
+		
+1.5. Verificando DNI de jefes y conyugues
+
+		/* DNI jefes de hogar */
+			gen caracdnij = length(JEFE_DNI), after (JEFE_DNI)
+		  
+			/* Colocando ceros a la ezquierda del DNI */	
+			gen str8 dni_j = string(real(JEFE_DNI),"%08.0f"), after(JEFE_DNI)
+		
+			/* reemplazando variable JEFE_DNI */
+			replace JEFE_DNI = dni_j
+			replace JEFE_DNI = "N.D" if caracdnij==10
+		
+			drop caracdnij dni_j
+		
+		/* DNI jefes de conyugues */
+			sort ID_HOGAR
+			
+			/* Recuperando nros de celular del conyugue*/
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==821
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==822
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==824
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==829
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==830
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==831
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==832
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==833
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==834
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==835
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==836
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==839
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==840
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==841
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==842
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==843
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==844
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==845
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==847
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==848
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==849
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==850
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==852
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==853
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==854
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==855
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==856
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==857
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==858
+			replace CONY_CEL = CONY_DNI if ID_HOGAR==859
+			
+			
+			/* Recuperando nros de dni del conyugue*/
+			replace CONY_DNI = "04481636" if ID_HOGAR==185
+			
+			replace CONY_DNI = "44677158" if ID_HOGAR==821
+			replace CONY_DNI = "01552144" if ID_HOGAR==822
+			replace CONY_DNI = "45906423" if ID_HOGAR==824
+			replace CONY_DNI = "43025598" if ID_HOGAR==829
+			replace CONY_DNI = "01531791" if ID_HOGAR==830
+			replace CONY_DNI = "47045509" if ID_HOGAR==831
+			replace CONY_DNI = "01485794" if ID_HOGAR==832
+			replace CONY_DNI = "46569665" if ID_HOGAR==833
+			replace CONY_DNI = "01486314" if ID_HOGAR==834
+			replace CONY_DNI = "01531494" if ID_HOGAR==835
+			replace CONY_DNI = "01484212" if ID_HOGAR==836
+			replace CONY_DNI = "41505744" if ID_HOGAR==839
+			replace CONY_DNI = "01485445" if ID_HOGAR==840
+			replace CONY_DNI = "43331853" if ID_HOGAR==841
+			replace CONY_DNI = "47466376" if ID_HOGAR==842
+			replace CONY_DNI = "01531656" if ID_HOGAR==843
+			replace CONY_DNI = "43402434" if ID_HOGAR==844
+			replace CONY_DNI = "01530106" if ID_HOGAR==845
+			replace CONY_DNI = "01530005" if ID_HOGAR==847
+			replace CONY_DNI = "01531053" if ID_HOGAR==848
+			replace CONY_DNI = "46002813" if ID_HOGAR==849
+			replace CONY_DNI = "01543816" if ID_HOGAR==850
+			replace CONY_DNI = "01530114" if ID_HOGAR==852
+			replace CONY_DNI = "80190356" if ID_HOGAR==853
+			replace CONY_DNI = "01544036" if ID_HOGAR==854
+			replace CONY_DNI = "01530205" if ID_HOGAR==855
+			replace CONY_DNI = "01553300" if ID_HOGAR==856
+			replace CONY_DNI = "01531404" if ID_HOGAR==857
+			replace CONY_DNI = "01485853" if ID_HOGAR==858
+			replace CONY_DNI = "01530073" if ID_HOGAR==859
+			
+	
+			/* completando con ceros los dni del conyugue*/						
+			gen caracdnic = length(CONY_DNI), after (CONY_DNI)
+		  
+			/* Colocando ceros a la ezquierda del DNI */	
+			gen str8 dni_c = string(real(CONY_DNI),"%08.0f"), after(CONY_DNI)
+		
+			/* reemplazando variable JEFE_DNI */
+			replace CONY_DNI = dni_c
+				
+			drop caracdnic dni_c
+		
+			/* completar missing ceros y otros */
+			replace CONY_DNI="88888888" if (CONY_DNI=="00000000" | CONY_DNI=="99999999" | CONY_DNI==".")
+			
 	
 	
-	
-	
+
 	
 	
 	
